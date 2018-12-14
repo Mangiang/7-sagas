@@ -3,6 +3,8 @@ import createSagaMiddleware from 'redux-saga';
 
 import reducers from '../reducers';
 
+import gameSaga from '../sagas/GameSaga'
+
 const sagaMiddleware = createSagaMiddleware();
 
 // Build the middleware for intercepting and dispatching navigation actions
@@ -18,6 +20,8 @@ const enhancer = compose(
 // Add the reducer to your store on the `router` key
 // Also apply our middleware for navigating
 export const store = createStore(reducers, enhancer);
+
+sagaMiddleware.run(gameSaga);
 
 // FIXME: load sagas based on router context
 [].map(saga => sagaMiddleware.run(saga));
