@@ -3,6 +3,7 @@ import {connect} from 'react-redux';
 import Target from '../components/Target';
 import Info from '../components/Info';
 import ButtonStart from '../components/ButtonStart';
+import ButtonStop from '../components/ButtonStop';
 
 // FIXME: maybe, do something about this ?
 const mapStateToProps = state => ({
@@ -35,6 +36,7 @@ const GameLayout = ({isStarted, lives, score, targetsList, dispatch}) => (
                     y={target.y}
                     value={target.value}
                     onClick={() => dispatch({type: 'TARGET_DESTROYED_REQUESTED', target: target})}/>))}
+                <ButtonStop onClick={() => dispatch({type: 'GAME_STOP_REQUESTED'})}/>
             </React.Fragment>
         ) : (
             <ButtonStart onClick={() => dispatch({type: 'GAME_START_REQUESTED'})}/>
