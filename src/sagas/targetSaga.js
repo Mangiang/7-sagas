@@ -1,8 +1,7 @@
-import {takeEvery } from 'redux-saga';
-import {put} from 'redux-saga/effects';
+import {put, takeEvery} from 'redux-saga/effects';
 
-function* destroyTarget(target) {
-    yield put({type: "TARGET_DESTROYED", target});
+function* destroyTarget(action) {
+    yield put({type: "TARGET_DESTROYED", targetId: action.targetId});
     yield put({type: 'SCORE_INCREMENT_REQUESTED'})
 }
 

@@ -35,12 +35,14 @@ const GameLayout = ({isStarted, lives, score, targetsList, dispatch}) => (
                     x={target.x}
                     y={target.y}
                     value={target.value}
-                    onClick={() => dispatch({type: 'TARGET_DESTROYED_REQUESTED', target: target})}/>))}
+                    onClick={() => dispatch({
+                        type: 'TARGET_DESTROYED_REQUESTED',
+                        targetId: target.id
+                    })}/>))}
                 <ButtonStop onClick={() => dispatch({type: 'GAME_STOP_REQUESTED'})}/>
             </React.Fragment>
         ) : (
-            <ButtonStart onClick={() => dispatch({type: 'GAME_START_REQUESTED'})}/>
-        )}
+            <ButtonStart onClick={() => dispatch({type: 'GAME_START_REQUESTED'})}/>)}
     </div>
 );
 
