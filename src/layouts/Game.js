@@ -27,10 +27,14 @@ const GameLayout = ({isStarted, lives, score, targetsList, dispatch}) => (
         }}
     >
         {isStarted ? (
-            [<Info lives={lives} score={score}/>,
-                targetsList.map((target) => {
-                    return <Target x={target.x} y={target.y} value={target.value}/>
-                })
+            [<Info key={"infos"} lives={lives} score={score}/>,
+                targetsList.map(target => <Target
+                                   key={target.id}
+                                   x={target.x}
+                                   y={target.y}
+                                   value={target.value}
+                                   onClick={() => dispatch({type: 'TARGET_DESTROYED_REQUESTED', target: target})}/>
+                )
             ]
         ) : (
             <ButtonStart onClick={() => dispatch({type: 'GAME_START_REQUESTED'})}/>

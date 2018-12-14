@@ -4,6 +4,7 @@ import createSagaMiddleware from 'redux-saga';
 import reducers from '../reducers';
 
 import gameSaga from '../sagas/gameSaga'
+import targetSaga from '../sagas/targetSaga'
 
 const sagaMiddleware = createSagaMiddleware();
 
@@ -22,6 +23,7 @@ const enhancer = compose(
 export const store = createStore(reducers, enhancer);
 
 sagaMiddleware.run(gameSaga);
+sagaMiddleware.run(targetSaga);
 
 // FIXME: load sagas based on router context
 [].map(saga => sagaMiddleware.run(saga));

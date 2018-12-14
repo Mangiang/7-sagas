@@ -1,12 +1,14 @@
 const defaultState = {
-    targetsList: []
+    targetsList: [
+        {id:0, x:5, y:5, value: 10}
+    ]
 };
 
 const targets = (state = defaultState, action) => {
+    let targetsList;
     switch (action.type) {
-        case 'GET_NEW_TARGET':
-            let targetsList = state.targetsList;
-            targetsList.push({x: 0, y: 0, value: 5});
+        case 'TARGET_DESTROYED':
+            targetsList = state.targetsList.filter((value, index) => value.id === action.target.id);
             return {
                 ...state,
                 targetsList: targetsList
