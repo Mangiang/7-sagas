@@ -1,18 +1,20 @@
 import {delay} from 'redux-saga';
 import {takeEvery, call, select, put} from 'redux-saga/effects';
 
-function* startGame(action) {
-    yield put({type: "GAME_START", width: action.width, height: action.height});
+function* startGame() {
+    yield put({type: "GAME_START"});
+    yield put({type: "TARGET_DECREMENT_BEGIN"});
 
     while (true) {
         yield call(delay, 1000);
         yield put({type: "TARGET_SPAWN"});
 
-        const started = yield select(state => state.isStarted);
+        const started = yield select(state => state.game.isStarted);
         if (!started)
             break;
     }
 }
+
 
 function* stopGame() {
     yield put({type: "GAME_STOP"});

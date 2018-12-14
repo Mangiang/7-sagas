@@ -22,6 +22,12 @@ const targets = (state = defaultState, action) => {
                 ...state,
                 targetsList: targetsList
             };
+        case 'TARGET_DECREMENT':
+            targetsList = state.targetsList.map((target) => ({...target, value: target.value - 1}));
+            return {
+                ...state,
+                targetsList: targetsList
+            };
         default:
             return state;
     }

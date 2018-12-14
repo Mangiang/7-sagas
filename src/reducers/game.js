@@ -1,7 +1,8 @@
 const defaultState = {
     lives: 3,
     score: 0,
-    isStarted: false
+    isStarted: false,
+    TIME_INTERVAL: 1000
 };
 
 const game = (state = defaultState, action) => {
