@@ -3,7 +3,7 @@ import createSagaMiddleware from 'redux-saga';
 
 import reducers from '../reducers';
 
-import gameSaga from '../sagas/GameSaga'
+import gameSaga from '../sagas/gameSaga'
 
 const sagaMiddleware = createSagaMiddleware();
 
