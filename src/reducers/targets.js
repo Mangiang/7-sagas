@@ -1,7 +1,6 @@
 const defaultState = {
-    targetsList: [
-        {id: 0, x: 5, y: 5, value: 10}
-    ]
+    targetsList: [],
+    targetId: 0
 };
 
 const targets = (state = defaultState, action) => {
@@ -15,11 +14,13 @@ const targets = (state = defaultState, action) => {
             };
         case 'TARGET_SPAWN':
             targetsList = [...state.targetsList];
+            let targetId = state.targetId;
             const x = Math.floor(Math.random() * 80) + 10;
             const y = Math.floor(Math.random() * 70) + 10;
-            targetsList.push({id: targetsList.length, x: x, y: y, value: 5});
+            targetsList.push({id: targetId++, x: x, y: y, value: 5});
             return {
                 ...state,
+                targetId : targetId,
                 targetsList: targetsList
             };
         case 'TARGET_DECREMENT':
