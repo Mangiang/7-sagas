@@ -15,8 +15,8 @@ const targets = (state = defaultState, action) => {
             };
         case 'TARGET_SPAWN':
             targetsList = [...state.targetsList];
-            let x = Math.floor(Math.random() * 90);
-            let y = Math.floor(Math.random() * 100);
+            const x = Math.floor(Math.random() * 80) + 10;
+            const y = Math.floor(Math.random() * 70) + 10;
             targetsList.push({id: targetsList.length, x: x, y: y, value: 5});
             return {
                 ...state,
