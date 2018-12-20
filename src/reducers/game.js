@@ -2,7 +2,8 @@ const defaultState = {
     lives: 3,
     score: 0,
     isStarted: false,
-    TIME_INTERVAL: 1000
+    TIME_INTERVAL: 1000,
+    SPAWN_INTERVAL: 1000
 };
 
 const game = (state = defaultState, action) => {
@@ -22,6 +23,11 @@ const game = (state = defaultState, action) => {
             return {
                 ...state,
                 score: newScore
+            };
+        case 'DECREASE_LIFE':
+            return {
+                ...state,
+                lives: state.lives -1
             };
         default:
             return state;

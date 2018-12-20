@@ -27,3 +27,5 @@ rule: all of this must be handled from the sagas
 
 6. Make this game fun.
    (all bonii must be listed when you deliver your game to your bored teacher)
+
+- spawn time is a settable variable

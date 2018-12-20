@@ -5,8 +5,10 @@ function* startGame() {
     yield put({type: "GAME_START"});
     yield put({type: "TARGET_DECREMENT_BEGIN"});
 
+    const spawnInterval =yield select(state => state.game.SPAWN_INTERVAL);
+
     while (true) {
-        yield call(delay, 1000);
+        yield call(delay, spawnInterval);
         yield put({type: "TARGET_SPAWN"});
 
         const started = yield select(state => state.game.isStarted);
@@ -15,6 +17,9 @@ function* startGame() {
     }
 }
 
+function* decreaseLife(){
+    yield put({type: 'DECREASE_LIFE'});
+}
 
 function* stopGame() {
     yield put({type: "GAME_STOP"});
@@ -28,6 +33,7 @@ function* gameSaga() {
     yield takeEvery("GAME_START_REQUESTED", startGame);
     yield takeEvery("GAME_STOP_REQUESTED", stopGame);
     yield takeEvery("SCORE_INCREMENT_REQUESTED", incrementScore);
+    yield takeEvery("DECREASE_LIFE_REQUESTED", decreaseLife);
 }
 
 export default gameSaga;
