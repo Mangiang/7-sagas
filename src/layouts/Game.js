@@ -2,18 +2,20 @@ import React from 'react';
 import {connect} from 'react-redux';
 import Target from '../components/Target';
 import Info from '../components/Info';
-import ButtonStart from '../components/ButtonStart';
 import ButtonStop from '../components/ButtonStop';
+import MainMenu from './MainMenu';
+import SettingsMenu from './SettingsMenu';
 
 // FIXME: maybe, do something about this ?
 const mapStateToProps = state => ({
     lives: state.game.lives,
     score: state.game.score,
     isStarted: state.game.isStarted,
+    inSettingsMenu: state.game.inSettingsMenu,
     targetsList: state.targets.targetsList
 });
 
-const GameLayout = ({isStarted, lives, score, targetsList, dispatch}) => (
+const GameLayout = ({isStarted, inSettingsMenu, lives, score, targetsList, dispatch}) => (
     <div
         style={{
             position: 'fixed',
@@ -43,7 +45,11 @@ const GameLayout = ({isStarted, lives, score, targetsList, dispatch}) => (
                 <ButtonStop onClick={() => dispatch({type: 'GAME_STOP_REQUESTED'})}/>
             </React.Fragment>
         ) : (
-            <ButtonStart onClick={() => dispatch({type: 'GAME_START_REQUESTED'})}/>)}
+            <React.Fragment>
+                {inSettingsMenu ?
+                    (<SettingsMenu/>) : (<MainMenu/>)
+                }
+            </React.Fragment>)}
     </div>
 );
 
