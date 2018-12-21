@@ -9,7 +9,15 @@ function* startGame() {
 
     while (true) {
         yield call(delay, spawnInterval);
+        const score = yield select(state => state.game.score);
+
         yield put({type: "TARGET_SPAWN"});
+
+        if (score >= 5 && score < 15)
+            yield put({type: "TARGET_SPAWN"});
+
+        if (score >= 15)
+            yield put({type: "TARGET_SPAWN"});
 
         const started = yield select(state => state.game.isStarted);
         if (!started)
