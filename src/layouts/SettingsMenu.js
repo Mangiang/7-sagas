@@ -23,8 +23,9 @@ const SettingsMenu = ({TIME_INTERVAL, SPAWN_INTERVAL, lives, dispatch}) => (
         style={{
             position: 'fixed',
             top: '25vw',
-            left: '25vw',
-            width: '50vw',
+            left: 0,
+            right: 0,
+            width: '300px',
             height: '50vh',
             margin: 'auto',
             color: 'white',
