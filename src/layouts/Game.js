@@ -35,6 +35,7 @@ const GameLayout = ({isStarted, lives, score, targetsList, dispatch}) => (
                     x={target.x}
                     y={target.y}
                     value={target.value}
+                    backgroundColor={target.backgroundColor}
                     onClick={() => dispatch({
                         type: 'TARGET_DESTROYED_REQUESTED',
                         targetId: target.id
