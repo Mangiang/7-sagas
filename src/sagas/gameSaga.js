@@ -162,11 +162,19 @@ function* changeLivesCount(action) {
     yield put({type: 'GAME_CHANGE_LIVES_COUNT', newLivesCount: action.newLivesCount});
 }
 
-function* decreaseLife() {
+function* decreaseLife(action) {
     yield put({type: 'GAME_DECREASE_LIFE'});
+    const livesLeft = yield select(state => state.game.lives);
+    if (livesLeft <= 0) {
+        if (!action.isMusicMode)
+            yield put({type: 'GAME_STOP_REQUESTED'});
+        else
+            yield put({type: 'GAME_STOP_MUSIC_REQUESTED'});
+    }
 }
 
 function* stopGame() {
+    yield put({type: 'TARGET_CLEAR_ALL'});
     yield put({type: 'GAME_STOP'});
 }
 

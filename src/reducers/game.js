@@ -50,6 +50,7 @@ const game = (state = defaultState, action) => {
         case 'GAME_STOP_APPLY':
             return{
                 ...defaultState,
+                godModeEnabled: state.godModeEnabled,
                 TIME_INTERVAL: state.TIME_INTERVAL,
                 SPAWN_INTERVAL: state.SPAWN_INTERVAL
             };
@@ -65,6 +66,7 @@ const game = (state = defaultState, action) => {
             musicCtx.close();
             return {
                 ...defaultState,
+                godModeEnabled: state.godModeEnabled,
                 TIME_INTERVAL: state.TIME_INTERVAL,
                 SPAWN_INTERVAL: state.SPAWN_INTERVAL,
                 music: null,

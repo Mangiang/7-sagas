@@ -24,11 +24,11 @@ function* decrementTargetValues(action) {
             lastUpdate = now;
         }
         yield put({type: "TARGET_DECREMENT", deltaTime: dt});
-        yield put({type: "TARGET_CHECK_REQUESTED"});
+        yield put({type: "TARGET_CHECK_REQUESTED", isMusicMode: action.needDeltaTime});
     }
 }
 
-function* targetChecker() {
+function* targetChecker(action) {
     const targetsList = yield select(state => state.targets.targetsList);
     let toDestroy = [];
     targetsList.forEach((target)=>{
@@ -41,7 +41,7 @@ function* targetChecker() {
         yield destroyTarget(toDestroy[i]);
         const godModeEnabled = yield  select(state => state.game.godModeEnabled);
         if (!godModeEnabled)
-            yield put({type:'DECREASE_LIFE_REQUESTED'});
+            yield put({type:'DECREASE_LIFE_REQUESTED', isMusicMode: action.isMusicMode});
     }
 }
 
