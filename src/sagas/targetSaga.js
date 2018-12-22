@@ -10,7 +10,7 @@ function* decrementTargetValues() {
     while (true) {
         yield call(delay, yield select(state => state.game.TIME_INTERVAL));
         yield put({type: "TARGET_DECREMENT"});
-        yield put({type: "TARGET_CHECK"});
+        yield put({type: "TARGET_CHECK_REQUESTED"});
 
         const started = yield select(state => state.game.isStarted);
         if (!started) {
@@ -44,9 +44,9 @@ function* targetClearAll() {
 
 function* targetSaga() {
     yield takeEvery("TARGET_DESTROYED_REQUESTED", manualDestroyTarget);
-    yield takeEvery("TARGET_DECREMENT_BEGIN", decrementTargetValues);
-    yield takeEvery("TARGET_CHECK", targetChecker);
-    yield takeEvery("TARGET_CLEAR_ALL", targetClearAll);
+    yield takeEvery("TARGET_DECREMENT_BEGIN_REQUESTED", decrementTargetValues);
+    yield takeEvery("TARGET_CHECK_REQUESTED", targetChecker);
+    yield takeEvery("TARGET_CLEAR_ALL_REQUESTED", targetClearAll);
 }
 
 export default targetSaga;

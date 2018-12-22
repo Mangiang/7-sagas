@@ -1,5 +1,6 @@
 import {delay} from 'redux-saga';
 import {takeEvery, call, select, put} from 'redux-saga/effects';
+import {process} from '../utils/audioProcessing';
 
 function* startGame() {
     yield put({type: 'GAME_START'});
@@ -8,6 +9,13 @@ function* startGame() {
     const spawnInterval = yield select(state => state.game.SPAWN_INTERVAL);
 
     while (true) {
+        const stopRequested = yield select(state => state.game.stopRequested);
+        if (stopRequested) {
+            yield put({type: 'TARGET_CLEAR_ALL_REQUESTED'});
+            yield put({type: 'GAME_STOP_APPLY'});
+            break;
+        }
+
         yield call(delay, spawnInterval);
         const score = yield select(state => state.game.score);
 
@@ -18,95 +26,154 @@ function* startGame() {
 
         if (score >= 15)
             yield put({type: 'TARGET_SPAWN'});
-
-        const stopRequested = yield select(state => state.game.stopRequested);
-        if (stopRequested) {
-            yield put({type: 'TARGET_CLEAR_ALL'});
-            yield put({type: 'GAME_STOP_APPLY'});
-            break;
-        }
     }
 }
 
 function* startMusic() {
-    yield put({type: 'GAME_START_MUSIC'});
 
     let context = new AudioContext();
     let src = context.createBufferSource();
 
     const buffer = yield select(state => state.game.music);
+
+    const offlineContext = new OfflineAudioContext(1, buffer.length, buffer.sampleRate);
+    const source = offlineContext.createBufferSource();
+    source.buffer = buffer;
+    const filter = offlineContext.createBiquadFilter();
+    filter.type = "lowpass";
+    source.connect(filter);
+    filter.connect(offlineContext.destination);
+    source.start(0);
+    let renderEvent = null;
+
+    offlineContext.oncomplete = (e) => {
+        renderEvent = e;
+    };
+    offlineContext.startRendering();
+
+    while (!renderEvent)
+    {
+        yield call(delay, 100);
+    }
+    const [data, threshold] = process(renderEvent);
+
     src.buffer = buffer;
     src.connect(context.destination);
     let sampleLoop = 8;
     let intervalStep = src.buffer.sampleRate / sampleLoop;
-    src.start(0);
     yield put({type: 'GAME_CHANGE_MUSIC_CONTEXT', ctx: context, src: src});
-    //data = buffer.getChannelData(0);
-    /*console.log(data);
-    console.log(threshold);
+    yield put({type: 'GAME_START_MUSIC'});
+
+    src.start(0);
     let c = 0;
     let mod = 0;
     let countI = 0;
-    let intervalID = setInterval(() => {
+
+    yield put({type: 'TARGET_DECREMENT_BEGIN_REQUESTED'});
+    while (true) {
+        const stopRequested = yield select(state => state.game.stopRequested);
+        if (stopRequested) {
+            yield put({type: 'TARGET_CLEAR_ALL_REQUESTED'});
+            yield put({type: 'GAME_STOP_APPLY'});
+            break;
+        }
+
+        yield call(delay, 1000 / sampleLoop);
+
         countI++;
         if (c < data.length)
             c += intervalStep;
-        else
-        {
-            clearInterval(intervalID);
-            console.log("Finished");
+        else {
+            yield put({type: 'TARGET_CLEAR_ALL'});
+            yield put({type: 'GAME_STOP_APPLY'});
+            break;
         }
 
-        let currentIdx = context.currentTime * data.length / (buffer.length/buffer.sampleRate);
+        let currentIdx = context.currentTime * data.length / (buffer.length / buffer.sampleRate);
 
         let sum = 0;
-        for (let t = Math.round(currentIdx-intervalStep); t < Math.round(currentIdx+intervalStep);t++)
-        {
+        for (let t = Math.round(currentIdx - intervalStep); t < Math.round(currentIdx + intervalStep); t++) {
             if (t > 0)
                 sum += data[t];
         }
-        let avgAmp = sum/(intervalStep);
-        console.log(avgAmp);
+        let avgAmp = sum / (intervalStep);
 
-        if (mod)
-        {
-            if (avgAmp > threshold)
-            {
-                circle.setAttribute("r", "80");
+        if (mod) {
+            if (avgAmp > threshold) {
+                yield put({type: 'TARGET_SPAWN_CONTROLLED'});
             }
-            else{
-                circle.setAttribute("r", "40");
-            }
-        }
-        else {
-            circle.setAttribute("r", "40");
         }
 
         mod = countI % 2;
-    }, 1000/sampleLoop);*/
+    }
+}
 
 
-    /*yield put({type: "TARGET_DECREMENT_BEGIN"});
+//data = buffer.getChannelData(0);
+/*console.log(data);
+console.log(threshold);
+let c = 0;
+let mod = 0;
+let countI = 0;
+let intervalID = setInterval(() => {
+    countI++;
+    if (c < data.length)
+        c += intervalStep;
+    else
+    {
+        clearInterval(intervalID);
+        console.log("Finished");
+    }
 
-    const spawnInterval =yield select(state => state.game.SPAWN_INTERVAL);
+    let currentIdx = context.currentTime * data.length / (buffer.length/buffer.sampleRate);
 
-    while (true) {
-        yield call(delay, spawnInterval);
-        const score = yield select(state => state.game.score);
+    let sum = 0;
+    for (let t = Math.round(currentIdx-intervalStep); t < Math.round(currentIdx+intervalStep);t++)
+    {
+        if (t > 0)
+            sum += data[t];
+    }
+    let avgAmp = sum/(intervalStep);
+    console.log(avgAmp);
 
+    if (mod)
+    {
+        if (avgAmp > threshold)
+        {
+            circle.setAttribute("r", "80");
+        }
+        else{
+            circle.setAttribute("r", "40");
+        }
+    }
+    else {
+        circle.setAttribute("r", "40");
+    }
+
+    mod = countI % 2;
+}, 1000/sampleLoop);*/
+
+
+/*yield put({type: "TARGET_DECREMENT_BEGIN"});
+
+const spawnInterval =yield select(state => state.game.SPAWN_INTERVAL);
+
+while (true) {
+    yield call(delay, spawnInterval);
+    const score = yield select(state => state.game.score);
+
+    yield put({type: "TARGET_SPAWN"});
+
+    if (score >= 5 && score < 15)
         yield put({type: "TARGET_SPAWN"});
 
-        if (score >= 5 && score < 15)
-            yield put({type: "TARGET_SPAWN"});
+    if (score >= 15)
+        yield put({type: "TARGET_SPAWN"});
 
-        if (score >= 15)
-            yield put({type: "TARGET_SPAWN"});
-
-        const started = yield select(state => state.game.isStarted);
-        if (!started)
-            break;
-    }*/
-}
+    const started = yield select(state => state.game.isStarted);
+    if (!started)
+        break;
+}*/
 
 function* chooseMusic() {
     yield put({type: 'GAME_CHOOSE_MUSIC'});
