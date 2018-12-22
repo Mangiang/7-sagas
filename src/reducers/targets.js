@@ -42,11 +42,10 @@ const targets = (state = defaultState, action) => {
                 targetsList: targetsList
             };
         case 'TARGET_DECREMENT':
-            console.log(action.deltaTime);
             targetsList = state.targetsList.map((target) => (
                 {...target,
-                    value: target.value - (action.deltaTime !== -1 ? action.deltaTime : 1),
-                    backgroundColor: getHexColorFromValue(target.value - (action.deltaTime !== -1 ? action.deltaTime : 1))}
+                    value: target.value - (action.deltaTime !== -1 ? action.deltaTime/1000 : 1),
+                    backgroundColor: getHexColorFromValue(target.value - (action.deltaTime !== -1 ? action.deltaTime/1000 : 1))}
                 ));
             return {
                 ...state,

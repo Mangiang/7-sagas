@@ -69,7 +69,7 @@ function* startMusic() {
     yield put({type: 'GAME_START_MUSIC'});
 
     src.start(0);
-    let dataLengthCheck = src.buffer.sampleRate;
+    let dataLengthCheck = 0 ;
     let mod = 0;
     let countLoop = 0;
 
@@ -97,7 +97,7 @@ function* startMusic() {
             break;
         }
 
-        let currentIdx = context.currentTime * data.length / (buffer.length / buffer.sampleRate);
+        let currentIdx = (context.currentTime + 1.32) * data.length / (buffer.length / buffer.sampleRate);
 
         let sum = 0;
         for (let t = Math.round(currentIdx - intervalStep); t < Math.round(currentIdx + intervalStep); t++) {

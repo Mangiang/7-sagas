@@ -22,14 +22,13 @@ function* decrementTargetValues(action) {
             let now = Date.now();
             dt = now - lastUpdate;
             lastUpdate = now;
-            console.log(dt);
         }
-        yield put({type: "TARGET_DECREMENT"});
-        yield put({type: "TARGET_CHECK_REQUESTED", deltaTime: dt});
+        yield put({type: "TARGET_DECREMENT", deltaTime: dt});
+        yield put({type: "TARGET_CHECK_REQUESTED"});
     }
 }
 
-function* targetChecker(action) {
+function* targetChecker() {
     const targetsList = yield select(state => state.targets.targetsList);
     let toDestroy = [];
     targetsList.forEach((target)=>{
@@ -40,8 +39,8 @@ function* targetChecker(action) {
     for (let i = 0; i < toDestroy.length; i++)
     {
         yield destroyTarger(toDestroy[i]);
+        yield put({type:'DECREASE_LIFE_REQUESTED'});
     }
-    yield put({type:'DECREASE_LIFE_REQUESTED', deltaTime : action.deltaTime});
 }
 
 function* destroyTarger(targetId){

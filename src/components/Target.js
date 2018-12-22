@@ -4,7 +4,8 @@ import React from 'react';
 const computeOutterSize = (value, circleShape) => {
     if (!circleShape)
         return "25px";
-
+    if (value <= 1)
+        return "100px";
     return (300-(200/value)).toString() + "px"
 };
 
@@ -31,7 +32,7 @@ const Target = ({
             justifyContent: "center",
             cursor: 'pointer',
             overflow: 'hidden',
-            zIndex: -zIndex
+            zIndex: -zIndex,
         }}
     >
         <div
