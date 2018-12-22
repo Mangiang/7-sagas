@@ -52,7 +52,7 @@ const Target = ({
                 right:0,
                 bottom: 0,
                 position: "absolute",
-                backgroundColor: circleShape ? "#FFFFFF66" : "#FFFFFF00",
+                backgroundColor: circleShape ? "#FFFFFF66" : backgroundColor,
                 borderRadius: circleShape ? '50%' : '0',
                 width: computeOuterSize(value, circleShape),
                 height: computeOuterSize(value, circleShape),

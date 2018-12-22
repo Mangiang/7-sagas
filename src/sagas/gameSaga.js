@@ -180,6 +180,10 @@ function* changeMusic(action) {
     yield put({type: 'GAME_CHANGE_MUSIC', music: action.music});
 }
 
+function* changeLoading(action) {
+    yield put({type: 'GAME_CHANGE_LOADING', isLoading: action.isLoading});
+}
+
 function* changeGodMode(action) {
     yield put({type: 'GAME_CHANGE_GOD_MODE', value: action.value});
 }
@@ -201,6 +205,7 @@ function* gameSaga() {
     yield takeEvery('GAME_CHANGE_LIVES_COUNT_REQUESTED', changeLivesCount);
     yield takeEvery('GAME_CHANGE_GOD_MODE_REQUESTED', changeGodMode);
     yield takeEvery('GAME_CHANGE_MUSIC_REQUESTED', changeMusic);
+    yield takeEvery('GAME_CHANGE_IS_LOADING_REQUESTED', changeLoading);
 }
 
 export default gameSaga;

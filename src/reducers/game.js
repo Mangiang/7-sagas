@@ -95,6 +95,7 @@ const game = (state = defaultState, action) => {
         case 'GAME_CHANGE_MUSIC':
             return {
                 ...state,
+                isLoading: true,
                 music: action.music
             };
         case 'GAME_CHANGE_MUSIC_CONTEXT':
@@ -102,6 +103,11 @@ const game = (state = defaultState, action) => {
                 ...state,
                 musicContext: action.ctx,
                 musicSource: action.src
+            };
+        case 'GAME_CHANGE_LOADING':
+            return{
+              ...state,
+              isLoading: action.isLoading
             };
         case 'GAME_INCREMENT_SCORE':
             let newScore = state.score + 1;
