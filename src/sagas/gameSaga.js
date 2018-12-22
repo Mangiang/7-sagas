@@ -97,7 +97,7 @@ function* startMusic() {
             break;
         }
 
-        let currentIdx = (context.currentTime + 1.32) * data.length / (buffer.length / buffer.sampleRate);
+        let currentIdx = (context.currentTime + 1) * data.length / (buffer.length / buffer.sampleRate);
 
         let sum = 0;
         for (let t = Math.round(currentIdx - intervalStep); t < Math.round(currentIdx + intervalStep); t++) {
@@ -120,7 +120,7 @@ function* startMusic() {
                         y = lastTargety + factor *  Math.sin(angle) * 10;
 
                         if (x < 10) x = 10;
-                        else if (x > 90) x = 90;
+                        else if (x > 70) x = 70;
                         if (y < 10) y = 10;
                         else if (y > 70) y = 70;
                 }

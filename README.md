@@ -28,6 +28,16 @@ rule: all of this must be handled from the sagas
 6. Make this game fun.
    (all bonii must be listed when you deliver your game to your bored teacher)
 
-- Spawn time is a settable variable
-- Max target value is a settable variable
-- Add Settings menu
+- `Spawn time` is a settable variable
+- `Max target` value is a settable variable
+- Add `god mode`
+- Add `Settings` menu :
+    * Lives count
+    * Time Interval
+    * Spawn Interval
+    * God mode
+ - Add `Music mode` : In this mode, the user is asked to submit an MP3 file. This file
+    is analysed by the game through the Web Audio API so the targets spawn according to the music
+    beats. The color change is inverted to show that the user should hit the target when the 
+    bigger shallow circle is the same size than the smaller one.
+ - `Change targets` from square to circles in Music mode.

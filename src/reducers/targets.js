@@ -2,15 +2,19 @@ const defaultState = {
     targetsList: [],
     targetId: 0,
     targetMaxValue: 5,
+    targetMusicMaxValue: 2,
     baseBackgroundColor: '#00FF00',
 };
 
-const getHexColorFromValue = (value) => {
-    const rValue = (Math.round(255 * (1 - (value / defaultState.targetMaxValue)))).toString(16).toUpperCase();
-    const gValue = (Math.round(255 * (value / defaultState.targetMaxValue))).toString(16).toUpperCase();
+const getHexColorFromValue = (value, maxValue, invert) => {
+    const rValue = (Math.round(255 * (1 - (value / maxValue)))).toString(16).toUpperCase();
+    const gValue = (Math.round(255 * (value / maxValue))).toString(16).toUpperCase();
     const bValue = '00';
 
-    return `#${rValue}${gValue}${bValue}`
+    if (!invert)
+        return `#${rValue}${gValue}${bValue}`;
+    else
+        return `#${gValue}${rValue}${bValue}`;
 };
 
 const targets = (state = defaultState, action) => {
@@ -25,7 +29,13 @@ const targets = (state = defaultState, action) => {
         case 'TARGET_SPAWN_CONTROLLED':
             targetsList = [...state.targetsList];
             targetId = state.targetId;
-            targetsList.push({id: targetId++, x: action.x, y: action.y, value: 2, backgroundColor: state.baseBackgroundColor});
+            targetsList.push({
+                id: targetId++,
+                x: action.x,
+                y: action.y,
+                value: defaultState.targetMusicMaxValue,
+                backgroundColor: "00FF00"
+            });
             return {
                 ...state,
                 targetId: targetId,
@@ -35,7 +45,13 @@ const targets = (state = defaultState, action) => {
         case 'TARGET_SPAWN':
             targetsList = [...state.targetsList];
             targetId = state.targetId;
-            targetsList.push({id: targetId++, x: action.x, y: action.y, value: state.targetMaxValue, backgroundColor: state.baseBackgroundColor});
+            targetsList.push({
+                id: targetId++,
+                x: action.x,
+                y: action.y,
+                value: state.targetMaxValue,
+                backgroundColor: state.baseBackgroundColor
+            });
             return {
                 ...state,
                 targetId: targetId,
@@ -43,10 +59,14 @@ const targets = (state = defaultState, action) => {
             };
         case 'TARGET_DECREMENT':
             targetsList = state.targetsList.map((target) => (
-                {...target,
-                    value: target.value - (action.deltaTime !== -1 ? action.deltaTime/1000 : 1),
-                    backgroundColor: getHexColorFromValue(target.value - (action.deltaTime !== -1 ? action.deltaTime/1000 : 1))}
-                ));
+                {
+                    ...target,
+                    value: target.value - (action.deltaTime !== -1 ? action.deltaTime / 1000 : 1),
+                    backgroundColor: getHexColorFromValue(target.value - (action.deltaTime !== -1 ? action.deltaTime / 1000 : 1),
+                        (action.delayTime !== -1 ? defaultState.targetMaxValue : defaultState.targetMusicMaxValue),
+                        (action.delayTime !== -1))
+                }
+            ));
             return {
                 ...state,
                 targetsList: targetsList

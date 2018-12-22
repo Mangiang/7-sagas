@@ -15,7 +15,7 @@ const mapStateToProps = state => ({
     inSettingsMenu: state.game.inSettingsMenu,
     inMusicMenu: state.game.inMusicMenu,
     targetsList: state.targets.targetsList,
-    music : state.game.music
+    music: state.game.music
 });
 
 const GameLayout = ({isStarted, inSettingsMenu, inMusicMenu, lives, score, targetsList, music, dispatch}) => (
@@ -35,27 +35,39 @@ const GameLayout = ({isStarted, inSettingsMenu, inMusicMenu, lives, score, targe
         {isStarted ? (
             <React.Fragment>
                 <Info lives={lives} score={score}/>
-                {targetsList.map((target) => (<Target
-                    key={target.id}
-                    zIndex={target.id}
-                    x={target.x}
-                    y={target.y}
-                    value={target.value}
-                    circleShape={music != null}
-                    backgroundColor={target.backgroundColor}
-                    onClick={() => dispatch({
-                        type: 'TARGET_DESTROYED_REQUESTED',
-                        targetId: target.id
-                    })}/>))}
-                <Button position={"relative"} text={"STOP"} top={"90%"} onClick={() => {music == null ? dispatch({type: 'GAME_STOP_REQUESTED'}) : dispatch({type : 'GAME_STOP_MUSIC_REQUESTED'})}}/>
+                {targetsList.map((target) => (
+                    <Target
+                        key={target.id}
+                        zIndex={target.id}
+                        x={target.x}
+                        y={target.y}
+                        value={target.value}
+                        circleShape={music != null}
+                        backgroundColor={target.backgroundColor}
+                        onClick={() => dispatch({
+                            type: 'TARGET_DESTROYED_REQUESTED',
+                            targetId: target.id
+                        })}/>
+                ))
+                }
+                <Button position={"relative"} text={"STOP"} top={"90%"} onClick={() => {
+                    music == null ? dispatch({type: 'GAME_STOP_REQUESTED'}) : dispatch({type: 'GAME_STOP_MUSIC_REQUESTED'})
+                }}/>
             </React.Fragment>
         ) : (
             <React.Fragment>
                 {inSettingsMenu ?
                     (
-                        <SettingsMenu/>) : (
+                        <SettingsMenu/>
+                    ) : (
                         <React.Fragment>
-                            {inMusicMenu ? (<MusicMenu/>) : (<MainMenu/>)}
+                            {inMusicMenu ? (
+                                <MusicMenu/>
+                            ) : (
+                                <React.Fragment>
+                                    <MainMenu/>
+                                </React.Fragment>
+                            )}
                         </React.Fragment>
                     )
                 }

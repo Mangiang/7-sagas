@@ -12,8 +12,8 @@ const Info = ({ lives, score }) => (
       textAlign: 'right'
     }}
   >
-    <div>{lives} ❤️</div>
-    <div>{score} 🥇</div>
+    <span role={"img"} aria-label={"lives"}>{lives} ❤️</span>
+    <span role={"img"} aria-label={"lives"}>{score} 🥇</span>
   </div>
 );
 
