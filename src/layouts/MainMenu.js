@@ -1,7 +1,7 @@
 import React from 'react';
 import {connect} from 'react-redux';
-import ButtonStart from '../components/ButtonStart';
-import ButtonSettings from '../components/ButtonSettings';
+
+import Button from '../components/Button';
 
 const MainMenu = ({dispatch}) => (
     <div
@@ -17,8 +17,9 @@ const MainMenu = ({dispatch}) => (
             margin: 'auto'
         }}
     >
-        <ButtonStart onClick={() => dispatch({type: 'GAME_START_REQUESTED'})}/>
-        <ButtonSettings onClick={() => dispatch({type: 'GAME_SETTINGS_REQUESTED'})}/>
+        <Button text={"Start"} backgroundColor={"#4BE072"} onClick={() => dispatch({type: 'GAME_START_REQUESTED'})}/>
+        <Button text={"Start with music"} top={"220px"} backgroundColor={"#3a90e0"} onClick={() => dispatch({type: 'GAME_CHOOSE_MUSIC_REQUESTED'})}/>
+        <Button text={"Settings"} top={"440px"} backgroundColor={"#e0a342"} onClick={() => dispatch({type: 'GAME_SETTINGS_REQUESTED'})}/>
     </div>
 );
 

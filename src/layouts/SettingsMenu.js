@@ -1,6 +1,6 @@
 import React from 'react';
 import {connect} from 'react-redux';
-import ButtonQuit from '../components/ButtonQuit';
+import Button from '../components/Button';
 
 import {process} from '../utils/audioProcessing';
 
@@ -121,10 +121,6 @@ const SettingsMenu = ({TIME_INTERVAL, SPAWN_INTERVAL, lives, dispatch}) => (
 
     >
         <input type={'file'} accept="audio/*" onInput={handleMusicChange.bind(this, {dispatch: dispatch})}/>
-        <svg height="400" width="400">
-            <circle id="circleSVG" cx="100" cy="100" r="40" stroke="black" strokeWidth="3" fill="red" />
-        </svg>
-        <canvas id="canvas" width="500" height="256"/>
         <label style={{marginBottom: '100px'}}>GAME SETTINGS</label>
         <div style={{marginBottom: '10px'}}>
             <label htmlFor="livesInput">Lives count : </label>
@@ -142,7 +138,7 @@ const SettingsMenu = ({TIME_INTERVAL, SPAWN_INTERVAL, lives, dispatch}) => (
                    defaultValue={SPAWN_INTERVAL / 1000}/>
             <label> seconds.</label>
         </div>
-        <ButtonQuit style={{marginUp: '30px'}} onClick={() => dispatch({type: 'GAME_MAIN_MENU_REQUESTED'})}/>
+        <Button style={{marginUp: '30px'}} text={"Main Menu"} onClick={() => dispatch({type: 'GAME_MAIN_MENU_REQUESTED'})}/>
     </div>
 );
 

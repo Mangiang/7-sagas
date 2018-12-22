@@ -25,6 +25,10 @@ function* startGame() {
     }
 }
 
+function* chooseMusic() {
+    yield put({type: "GAME_CHOOSE_MUSIC"});
+}
+
 function* displayMainMenu() {
     yield put({type: "GAME_MAIN_MENU"});
 }
@@ -54,6 +58,7 @@ function* incrementScore() {
 }
 
 function* gameSaga() {
+    yield takeEvery("GAME_CHOOSE_MUSIC_REQUESTED", chooseMusic);
     yield takeEvery("GAME_START_REQUESTED", startGame);
     yield takeEvery("GAME_STOP_REQUESTED", stopGame);
     yield takeEvery("GAME_SETTINGS_REQUESTED", displaySettings);
