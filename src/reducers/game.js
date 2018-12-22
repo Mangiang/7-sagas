@@ -72,7 +72,8 @@ const game = (state = defaultState, action) => {
                 music: null,
                 isStarted: false,
                 musicContext: null,
-                musicSource: null
+                musicSource: null,
+                stopRequested: true
             };
         case 'GAME_CHANGE_TIME_INTERVAL':
             return {
