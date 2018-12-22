@@ -41,4 +41,5 @@ rule: all of this must be handled from the sagas
     is analysed by the game through the Web Audio API so the targets spawn according to the music
     beats. The color change is inverted to show that the user should hit the target when the 
     bigger shallow circle is the same size than the smaller one.
+    Tested on 'The Hunger' by Amaranthe and 'The end is where we begin' by Three Days Grace.
  - `Change targets geometry` from square to circles in Music mode.
