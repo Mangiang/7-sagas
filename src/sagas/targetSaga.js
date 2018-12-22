@@ -6,20 +6,30 @@ function* manualDestroyTarget(action) {
     yield put({type: 'SCORE_INCREMENT_REQUESTED'})
 }
 
-function* decrementTargetValues() {
+function* decrementTargetValues(action) {
+    let lastUpdate = Date.now();
+    let dt = -1;
     while (true) {
-        yield call(delay, yield select(state => state.game.TIME_INTERVAL));
-        yield put({type: "TARGET_DECREMENT"});
-        yield put({type: "TARGET_CHECK_REQUESTED"});
-
         const started = yield select(state => state.game.isStarted);
         if (!started) {
             break;
         }
+
+        if (!action.needDeltaTime)
+            yield call(delay, yield select(state => state.game.TIME_INTERVAL));
+        else {
+            yield call(delay, 10);
+            let now = Date.now();
+            dt = now - lastUpdate;
+            lastUpdate = now;
+            console.log(dt);
+        }
+        yield put({type: "TARGET_DECREMENT"});
+        yield put({type: "TARGET_CHECK_REQUESTED", deltaTime: dt});
     }
 }
 
-function* targetChecker() {
+function* targetChecker(action) {
     const targetsList = yield select(state => state.targets.targetsList);
     let toDestroy = [];
     targetsList.forEach((target)=>{
@@ -30,8 +40,8 @@ function* targetChecker() {
     for (let i = 0; i < toDestroy.length; i++)
     {
         yield destroyTarger(toDestroy[i]);
-        yield put({type:'DECREASE_LIFE_REQUESTED'});
     }
+    yield put({type:'DECREASE_LIFE_REQUESTED', deltaTime : action.deltaTime});
 }
 
 function* destroyTarger(targetId){

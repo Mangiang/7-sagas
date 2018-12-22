@@ -37,6 +37,7 @@ const GameLayout = ({isStarted, inSettingsMenu, inMusicMenu, lives, score, targe
                 <Info lives={lives} score={score}/>
                 {targetsList.map((target) => (<Target
                     key={target.id}
+                    zIndex={target.id}
                     x={target.x}
                     y={target.y}
                     value={target.value}

@@ -19,13 +19,17 @@ function* startGame() {
         yield call(delay, spawnInterval);
         const score = yield select(state => state.game.score);
 
-        yield put({type: 'TARGET_SPAWN'});
+
+        const x = Math.floor(Math.random() * 80) + 10;
+        const y = Math.floor(Math.random() * 70) + 10;
+
+        yield put({type: 'TARGET_SPAWN',x,y});
 
         if (score >= 5 && score < 15)
-            yield put({type: 'TARGET_SPAWN'});
+            yield put({type: 'TARGET_SPAWN',x,y});
 
         if (score >= 15)
-            yield put({type: 'TARGET_SPAWN'});
+            yield put({type: 'TARGET_SPAWN',x,y});
     }
 }
 
@@ -65,11 +69,11 @@ function* startMusic() {
     yield put({type: 'GAME_START_MUSIC'});
 
     src.start(0);
-    let c = 0;
+    let dataLengthCheck = src.buffer.sampleRate;
     let mod = 0;
-    let countI = 0;
+    let countLoop = 0;
 
-    yield put({type: 'TARGET_DECREMENT_BEGIN_REQUESTED'});
+    yield put({type: 'TARGET_DECREMENT_BEGIN_REQUESTED', needDeltaTime: true});
     let lastTargetx = null;
     let lastTargety = null;
     const factorArray = [-1, 1];
@@ -84,9 +88,9 @@ function* startMusic() {
 
         yield call(delay, 1000 / sampleLoop);
 
-        countI++;
-        if (c < data.length)
-            c += intervalStep;
+        countLoop++;
+        if (dataLengthCheck < data.length)
+            dataLengthCheck += intervalStep;
         else {
             yield put({type: 'TARGET_CLEAR_ALL'});
             yield put({type: 'GAME_STOP_APPLY'});
@@ -126,76 +130,10 @@ function* startMusic() {
             }
         }
 
-        mod = countI % 2;
+        mod = countLoop % 2;
     }
 }
 
-
-//data = buffer.getChannelData(0);
-/*console.log(data);
-console.log(threshold);
-let c = 0;
-let mod = 0;
-let countI = 0;
-let intervalID = setInterval(() => {
-    countI++;
-    if (c < data.length)
-        c += intervalStep;
-    else
-    {
-        clearInterval(intervalID);
-        console.log("Finished");
-    }
-
-    let currentIdx = context.currentTime * data.length / (buffer.length/buffer.sampleRate);
-
-    let sum = 0;
-    for (let t = Math.round(currentIdx-intervalStep); t < Math.round(currentIdx+intervalStep);t++)
-    {
-        if (t > 0)
-            sum += data[t];
-    }
-    let avgAmp = sum/(intervalStep);
-    console.log(avgAmp);
-
-    if (mod)
-    {
-        if (avgAmp > threshold)
-        {
-            circle.setAttribute("r", "80");
-        }
-        else{
-            circle.setAttribute("r", "40");
-        }
-    }
-    else {
-        circle.setAttribute("r", "40");
-    }
-
-    mod = countI % 2;
-}, 1000/sampleLoop);*/
-
-
-/*yield put({type: "TARGET_DECREMENT_BEGIN"});
-
-const spawnInterval =yield select(state => state.game.SPAWN_INTERVAL);
-
-while (true) {
-    yield call(delay, spawnInterval);
-    const score = yield select(state => state.game.score);
-
-    yield put({type: "TARGET_SPAWN"});
-
-    if (score >= 5 && score < 15)
-        yield put({type: "TARGET_SPAWN"});
-
-    if (score >= 15)
-        yield put({type: "TARGET_SPAWN"});
-
-    const started = yield select(state => state.game.isStarted);
-    if (!started)
-        break;
-}*/
 
 function* chooseMusic() {
     yield put({type: 'GAME_CHOOSE_MUSIC'});

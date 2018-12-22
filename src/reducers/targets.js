@@ -14,7 +14,7 @@ const getHexColorFromValue = (value) => {
 };
 
 const targets = (state = defaultState, action) => {
-    let targetsList, targetId, x, y;
+    let targetsList, targetId;
     switch (action.type) {
         case 'TARGET_DESTROYED':
             targetsList = state.targetsList.filter((value) => (value.id !== action.targetId));
@@ -25,7 +25,7 @@ const targets = (state = defaultState, action) => {
         case 'TARGET_SPAWN_CONTROLLED':
             targetsList = [...state.targetsList];
             targetId = state.targetId;
-            targetsList.push({id: targetId++, x: action.x, y: action.y, value: state.targetMaxValue, backgroundColor: state.baseBackgroundColor});
+            targetsList.push({id: targetId++, x: action.x, y: action.y, value: 2, backgroundColor: state.baseBackgroundColor});
             return {
                 ...state,
                 targetId: targetId,
@@ -35,16 +35,19 @@ const targets = (state = defaultState, action) => {
         case 'TARGET_SPAWN':
             targetsList = [...state.targetsList];
             targetId = state.targetId;
-            x = Math.floor(Math.random() * 80) + 10;
-            y = Math.floor(Math.random() * 70) + 10;
-            targetsList.push({id: targetId++, x: x, y: y, value: state.targetMaxValue, backgroundColor: state.baseBackgroundColor});
+            targetsList.push({id: targetId++, x: action.x, y: action.y, value: state.targetMaxValue, backgroundColor: state.baseBackgroundColor});
             return {
                 ...state,
                 targetId: targetId,
                 targetsList: targetsList
             };
         case 'TARGET_DECREMENT':
-            targetsList = state.targetsList.map((target) => ({...target, value: target.value - 1, backgroundColor: getHexColorFromValue(target.value - 1)}));
+            console.log(action.deltaTime);
+            targetsList = state.targetsList.map((target) => (
+                {...target,
+                    value: target.value - (action.deltaTime !== -1 ? action.deltaTime : 1),
+                    backgroundColor: getHexColorFromValue(target.value - (action.deltaTime !== -1 ? action.deltaTime : 1))}
+                ));
             return {
                 ...state,
                 targetsList: targetsList
