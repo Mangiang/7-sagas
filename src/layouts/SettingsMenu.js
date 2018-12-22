@@ -36,14 +36,31 @@ const handleMusicChange = (dispatchObject, event) => {
 
     analyser.fftSize = 256;
 
+    var distortion = context.createWaveShaper();
+    var gainNode = context.createGain();
+    var biquadFilter = context.createBiquadFilter();
+    var convolver = context.createConvolver();
+    analyser.connect(distortion);
+    distortion.connect(biquadFilter);
+    biquadFilter.connect(convolver);
+    convolver.connect(gainNode);
+    gainNode.connect(context.destination);
+
+    biquadFilter.type = "lowshelf";
+    biquadFilter.frequency.setValueAtTime(1000, context.currentTime);
+    biquadFilter.gain.setValueAtTime(25, context.currentTime);
+
     let bufferLength = analyser.frequencyBinCount;
 
-    var canvasWidth = 1200;
+    var canvasWidth = 500;
     var canvasHeight = 256;
     var ctx = document.getElementById('canvas').getContext('2d');
 
+    analyser.minDecibels = -90;
+    analyser.maxDecibels = -10;
+
     let volume = 0;
-    let streamData = new Uint8Array(128);
+    let streamData = new Uint8Array(bufferLength);
     var sampleAudioStream = function () {
         // This closure is where the magic happens. Because it gets called with setInterval below, it continuously samples the audio data
         // and updates the streamData and volume properties. This the SoundCouldAudioSource function can be passed to a visualization routine and
@@ -51,105 +68,37 @@ const handleMusicChange = (dispatchObject, event) => {
         analyser.getByteFrequencyData(streamData);
         // calculate an overall volume value
         var total = 0;
-        for (let i = 0; i < 80; i++) { // get the volume from the first 80 bins, else it gets too loud with treble
+        let minBins = 40;
+        let maxBins = 120;
+        for (let i = minBins; i < maxBins; i++) { // get the volume from the first 80 bins, else it gets too loud with treble
             total += streamData[i];
         }
         volume = total;
-        ctx.clearRect(0, 0, canvasWidth, canvasHeight);
-        ctx.fillStyle = 'rgb(200, 200, 200)';
+        ctx.fillStyle = 'rgb(0, 0, 0)';
         ctx.fillRect(0, 0, canvasWidth, canvasHeight);
-        ctx.lineWidth = 2;
-        ctx.strokeStyle = 'rgb(0, 0, 0)';
-        ctx.beginPath();
-        for(let bin = 0; bin < streamData.length; bin ++) {
-            // do something with each value. Here's a simple example
-            var val = streamData[bin];
-            var red = val;
-            var green = 255 - val;
-            var blue = val / 2;
-            ctx.fillStyle = 'rgb(' + red + ', ' + green + ', ' + blue + ')';
-            ctx.fillRect(bin * 2, 0, 2, 200);
-            // use lines and shapes to draw to the canvas is various ways. Use your imagination!
+
+        var largeurBarre = (canvasWidth / bufferLength) * 2.5;
+        var hauteurBarre;
+        var x = 0;
+
+        for(var i = 0; i < bufferLength; i++) {
+            hauteurBarre = streamData[i];
+
+            ctx.fillStyle = 'rgb(' + (hauteurBarre+100) + ',50,50)';
+            ctx.fillRect(x,canvasHeight-hauteurBarre/2,largeurBarre,hauteurBarre/2);
+
+            x += largeurBarre + 1;
         }
     };
     setInterval(sampleAudioStream, 20);
-
-    let analyseArray = [];
-    /*window.setInterval(function () {
-        var dataArray = new Uint8Array(bufferLength);
-        analyser.getByteTimeDomainData(dataArray);
-        for (let i = 0; i < bufferLength; i++) {
-            if (dataArray[i] !== 128) {
-                analyseArray.push(dataArray);
-                ctx.clearRect(0, 0, canvasWidth, canvasHeight);
-                ctx.fillStyle = 'rgb(200, 200, 200)';
-                ctx.fillRect(0, 0, canvasWidth, canvasHeight);
-                ctx.lineWidth = 2;
-                ctx.strokeStyle = 'rgb(0, 0, 0)';
-                ctx.beginPath();
-                let sliceWidth = canvasWidth / bufferLength;
-                var x = 0;
-                /*for (let i = 0; i < dataArray.length; i++) {
-                    var value = dataArray[i] / 256;
-                    var y = canvasHeight - (canvasHeight * value) - 1;
-                    ctx.fillStyle = '#ffffff';
-                    ctx.fillRect(i, y, 1, 1);
-                }
-                /*for(let i = 0; i < bufferLength; i++) {
-
-                    let v = dataArray[i] / 128.0;
-                    let y = v * canvasHeight/2;
-
-                    if(i === 0) {
-                        ctx.moveTo(x, y);
-                    } else {
-                        ctx.lineTo(x, y);
-                    }
-
-                    x += sliceWidth;
-                }
-                ctx.lineTo(ctx.width, ctx.height/2);
-                ctx.stroke();
-                for (let bin = 0; bin < streamData.length; bin++) {
-                    // do something with each value. Here's a simple example
-                    var val = streamData[bin];
-                    var red = val;
-                    var green = 255 - val;
-                    var blue = val / 2;
-                    ctx.fillStyle = 'rgb(' + red + ', ' + green + ', ' + blue + ')';
-                    ctx.fillRect(bin * 2, 0, 2, 200);
-                    // use lines and shapes to draw to the canvas is various ways. Use your imagination!
-                }
-
-                break;
-            }
-        }
-    }, 50);*/
-
     audio.onended = function () {
         window.clearInterval();
-        audio.playbackRate = 1;
-        audio.play();
-        /*console.log(analyseArray);
-        var count = 0;
-        window.setInterval(function () {
-            const arr = analyseArray[count];
-            ctx.clearRect(0, 0, canvasWidth, canvasHeight);
-            for (let i = 0; i < arr.length; i++) {
-                var value = arr[i] / 256;
-                var y = canvasHeight - (canvasHeight * value) - 1;
-                ctx.fillStyle = '#ffffff';
-                ctx.fillRect(i, y, 1, 1);
-            }
-            count++;
-        }, 500);*/
     };
 
 
     //audio.playbackRate = 16;
     audio.playbackRate = 1;
     audio.play();
-
 };
 
 const SettingsMenu = ({TIME_INTERVAL, SPAWN_INTERVAL, lives, dispatch}) => (
@@ -168,7 +117,7 @@ const SettingsMenu = ({TIME_INTERVAL, SPAWN_INTERVAL, lives, dispatch}) => (
 
     >
         <input type={'file'} accept="audio/*" onInput={handleMusicChange.bind(this, {dispatch: dispatch})}/>
-        <canvas id="canvas" width="1200" height="256"/>
+        <canvas id="canvas" width="500" height="256"/>
         <label style={{marginBottom: '100px'}}>GAME SETTINGS</label>
         <div style={{marginBottom: '10px'}}>
             <label htmlFor="livesInput">Lives count : </label>
