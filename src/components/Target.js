@@ -12,12 +12,12 @@ const Target = ({
             position: 'absolute',
             top: `${y}%`,
             left: `${x}%`,
-            width: circleShape ? "60px" : '25px',
-            height: circleShape ? "60px" : '25px',
+            width: circleShape ? "100px" : '25px',
+            height: circleShape ? "100px" : '25px',
             textAlign: 'center',
-            lineHeight: '25px',
+            lineHeight: '50px',
             cursor: 'pointer',
-            borderRadius: circleShape ? "30px" : "0",
+            borderRadius: circleShape ? "50px" : "0",
             backgroundColor: backgroundColor
         }}
         onClick={onClick}

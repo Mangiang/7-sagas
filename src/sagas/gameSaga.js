@@ -70,6 +70,10 @@ function* startMusic() {
     let countI = 0;
 
     yield put({type: 'TARGET_DECREMENT_BEGIN_REQUESTED'});
+    let lastTargetx = null;
+    let lastTargety = null;
+    const factorArray = [-1, 1];
+
     while (true) {
         const stopRequested = yield select(state => state.game.stopRequested);
         if (stopRequested) {
@@ -100,7 +104,25 @@ function* startMusic() {
 
         if (mod) {
             if (avgAmp > threshold) {
-                yield put({type: 'TARGET_SPAWN_CONTROLLED'});
+                let x, y;
+                if (!lastTargetx || !lastTargety) {
+                    x = Math.floor(Math.random() * 80) + 10;
+                    y = Math.floor(Math.random() * 70) + 10;
+                }
+                else {
+                        const angle = Math.random() * Math.PI * 2;
+                        const factor = factorArray[Math.floor(Math.random() * factorArray.length)];
+                        x = lastTargetx + factor * Math.cos(angle) * 10;
+                        y = lastTargety + factor *  Math.sin(angle) * 10;
+
+                        if (x < 10) x = 10;
+                        else if (x > 90) x = 90;
+                        if (y < 10) y = 10;
+                        else if (y > 70) y = 70;
+                }
+                lastTargetx = x;
+                lastTargety = y;
+                yield put({type: 'TARGET_SPAWN_CONTROLLED', x:x, y:y});
             }
         }
 
