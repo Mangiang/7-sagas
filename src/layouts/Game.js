@@ -44,10 +44,12 @@ const GameLayout = ({isStarted, inSettingsMenu, inMusicMenu, lives, score, targe
                         value={target.value}
                         circleShape={music != null}
                         backgroundColor={target.backgroundColor}
-                        onClick={() => dispatch({
-                            type: 'TARGET_DESTROYED_REQUESTED',
-                            targetId: target.id
-                        })}/>
+                        onClick={() => {
+                            dispatch({
+                                type: 'TARGET_DESTROYED_REQUESTED',
+                                targetId: target.id
+                            });
+                        }}/>
                 ))
                 }
                 <Button position={"relative"} text={"STOP"} top={"90%"} onClick={() => {

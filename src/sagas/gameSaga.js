@@ -4,7 +4,7 @@ import {process} from '../utils/audioProcessing';
 
 function* startGame() {
     yield put({type: 'GAME_START'});
-    yield put({type: 'TARGET_DECREMENT_BEGIN'});
+    yield put({type: 'TARGET_DECREMENT_BEGIN_REQUESTED', needDeltaTime: false});
 
     const spawnInterval = yield select(state => state.game.SPAWN_INTERVAL);
 
@@ -23,13 +23,18 @@ function* startGame() {
         const x = Math.floor(Math.random() * 80) + 10;
         const y = Math.floor(Math.random() * 70) + 10;
 
-        yield put({type: 'TARGET_SPAWN',x,y});
+        yield put({type: 'TARGET_SPAWN', x, y});
 
-        if (score >= 5 && score < 15)
-            yield put({type: 'TARGET_SPAWN',x,y});
-
-        if (score >= 15)
-            yield put({type: 'TARGET_SPAWN',x,y});
+        if (score >= 5 && score < 15) {
+            const x = Math.floor(Math.random() * 80) + 10;
+            const y = Math.floor(Math.random() * 70) + 10;
+            yield put({type: 'TARGET_SPAWN', x, y});
+        }
+        if (score >= 15) {
+            const x = Math.floor(Math.random() * 80) + 10;
+            const y = Math.floor(Math.random() * 70) + 10;
+            yield put({type: 'TARGET_SPAWN', x, y});
+        }
     }
 }
 
@@ -55,8 +60,7 @@ function* startMusic() {
     };
     offlineContext.startRendering();
 
-    while (!renderEvent)
-    {
+    while (!renderEvent) {
         yield call(delay, 100);
     }
     const [data, threshold] = process(renderEvent);
@@ -69,7 +73,7 @@ function* startMusic() {
     yield put({type: 'GAME_START_MUSIC'});
 
     src.start(0);
-    let dataLengthCheck = 0 ;
+    let dataLengthCheck = 0;
     let mod = 0;
     let countLoop = 0;
 
@@ -92,7 +96,7 @@ function* startMusic() {
         if (dataLengthCheck < data.length)
             dataLengthCheck += intervalStep;
         else {
-            yield put({type: 'TARGET_CLEAR_ALL'});
+            yield put({type: 'TARGET_CLEAR_ALL_REQUESTED'});
             yield put({type: 'GAME_STOP_APPLY'});
             break;
         }
@@ -112,21 +116,20 @@ function* startMusic() {
                 if (!lastTargetx || !lastTargety) {
                     x = Math.floor(Math.random() * 80) + 10;
                     y = Math.floor(Math.random() * 70) + 10;
-                }
-                else {
-                        const angle = Math.random() * Math.PI * 2;
-                        const factor = factorArray[Math.floor(Math.random() * factorArray.length)];
-                        x = lastTargetx + factor * Math.cos(angle) * 10;
-                        y = lastTargety + factor *  Math.sin(angle) * 10;
+                } else {
+                    const angle = Math.random() * Math.PI * 2;
+                    const factor = factorArray[Math.floor(Math.random() * factorArray.length)];
+                    x = lastTargetx + factor * Math.cos(angle) * 10;
+                    y = lastTargety + factor * Math.sin(angle) * 10;
 
-                        if (x < 10) x = 10;
-                        else if (x > 70) x = 70;
-                        if (y < 10) y = 10;
-                        else if (y > 70) y = 70;
+                    if (x < 10) x = 10;
+                    else if (x > 70) x = 70;
+                    if (y < 10) y = 10;
+                    else if (y > 70) y = 70;
                 }
                 lastTargetx = x;
                 lastTargety = y;
-                yield put({type: 'TARGET_SPAWN_CONTROLLED', x:x, y:y});
+                yield put({type: 'TARGET_SPAWN_CONTROLLED', x: x, y: y});
             }
         }
 

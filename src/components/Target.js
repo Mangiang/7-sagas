@@ -14,7 +14,7 @@ const computeOuterOffset = (value, circleShape) => {
         return 0;
     if (value <= 1)
         return 200;
-    return (200-(50*(value-1)))
+    return (200 - (50 * (value - 1)))
 };
 
 const computeInnerOffset = (value, circleShape) => {
@@ -29,8 +29,8 @@ const Target = ({
                     y = 0,
                     value = 0,
                     backgroundColor = '#00FF00',
-                    circleShape = false, onClick = () => {
-    }
+                    circleShape = false,
+                    onClick = () => { }
                 }) => (
     <div
         style={{
@@ -38,18 +38,19 @@ const Target = ({
             top: `${y}%`,
             left: `${x}%`,
             display: "flex",
-            pointerEvents: "none",
+            pointerEvents: !circleShape ? "auto" : "none",
             justifyContent: "center",
             cursor: 'pointer',
             overflow: 'visible',
             zIndex: -zIndex,
         }}
+        onClick={!circleShape ? onClick: undefined}
     >
         <div style={{position: 'relative'}}>
             <div style={{
-                top:0,
+                top: 0,
                 left: circleShape ? computeOuterOffset(value, circleShape) : 0,
-                right:0,
+                right: 0,
                 bottom: 0,
                 position: "absolute",
                 backgroundColor: circleShape ? "#FFFFFF66" : backgroundColor,
@@ -60,27 +61,29 @@ const Target = ({
                 cursor: 'pointer',
                 margin: 'auto',
                 zIndex: -zIndex - 1,
-            }}/>
+            }} />
             <div
                 style={{
                     position: 'absolute',
-                    top:0,
-                    left: circleShape ? computeInnerOffset(value, circleShape) : 0,
-                    right:0,
+                    top: 0,
+                    left: circleShape ? computeInnerOffset(value, circleShape) : 5,
+                    right: 0,
                     bottom: 0,
                     margin: 'auto',
                     width: circleShape ? '100px' : '100%',
                     height: circleShape ? '100px' : '100%',
                     textAlign: 'center',
-                    lineHeight: circleShape ? '50px' : '25px',
+                    lineHeight: circleShape ? '50px' : '5px',
                     borderRadius: circleShape ? '50px' : '0',
                     backgroundColor: backgroundColor,
                     pointerEvents: "auto",
                     zIndex: -zIndex,
                 }}
-                onClick={onClick}
+                onClick={circleShape ? onClick: undefined}
             >
-                {circleShape ? "" : value}
+                {
+                    circleShape ? "" : value
+                }
             </div>
         </div>
     </div>

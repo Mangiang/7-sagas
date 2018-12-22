@@ -2,7 +2,7 @@ import {delay} from 'redux-saga'
 import {put, call, select, takeEvery} from 'redux-saga/effects';
 
 function* manualDestroyTarget(action) {
-    yield destroyTarger(action.targetId);
+    yield destroyTarget(action.targetId);
     yield put({type: 'SCORE_INCREMENT_REQUESTED'})
 }
 
@@ -38,14 +38,14 @@ function* targetChecker() {
 
     for (let i = 0; i < toDestroy.length; i++)
     {
-        yield destroyTarger(toDestroy[i]);
+        yield destroyTarget(toDestroy[i]);
         const godModeEnabled = yield  select(state => state.game.godModeEnabled);
         if (!godModeEnabled)
             yield put({type:'DECREASE_LIFE_REQUESTED'});
     }
 }
 
-function* destroyTarger(targetId){
+function* destroyTarget(targetId){
     yield put({type: "TARGET_DESTROYED", targetId: targetId});
 }
 
