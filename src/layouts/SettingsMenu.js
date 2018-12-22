@@ -2,6 +2,8 @@ import React from 'react';
 import {connect} from 'react-redux';
 import ButtonQuit from '../components/ButtonQuit';
 
+import {process} from '../utils/audioProcessing';
+
 const mapStateToProps = state => ({
     lives: state.game.lives,
     TIME_INTERVAL: state.game.TIME_INTERVAL,
@@ -20,86 +22,88 @@ const handleLivesCountChange = (dispatchObject, event) => {
 };
 
 const handleMusicChange = (dispatchObject, event) => {
-    let files = event.target.files;
-
-
-    let audio = new Audio();
-    audio.src = URL.createObjectURL(files[0]);
-    audio.load();
-    audio.play();
-    let context = new AudioContext();
-    let src = context.createMediaElementSource(audio);
-    let analyser = context.createAnalyser();
-
-    src.connect(analyser);
-    analyser.connect(context.destination);
-
-    analyser.fftSize = 256;
-
-    var distortion = context.createWaveShaper();
-    var gainNode = context.createGain();
-    var biquadFilter = context.createBiquadFilter();
-    var convolver = context.createConvolver();
-    analyser.connect(distortion);
-    distortion.connect(biquadFilter);
-    biquadFilter.connect(convolver);
-    convolver.connect(gainNode);
-    gainNode.connect(context.destination);
-
-    biquadFilter.type = "lowshelf";
-    biquadFilter.frequency.setValueAtTime(1000, context.currentTime);
-    biquadFilter.gain.setValueAtTime(25, context.currentTime);
-
-    let bufferLength = analyser.frequencyBinCount;
-
-    var canvasWidth = 500;
-    var canvasHeight = 256;
-    var ctx = document.getElementById('canvas').getContext('2d');
-
-    analyser.minDecibels = -90;
-    analyser.maxDecibels = -10;
-
-    let volume = 0;
-    let streamData = new Uint8Array(bufferLength);
-    var sampleAudioStream = function () {
-        // This closure is where the magic happens. Because it gets called with setInterval below, it continuously samples the audio data
-        // and updates the streamData and volume properties. This the SoundCouldAudioSource function can be passed to a visualization routine and
-        // continue to give real-time data on the audio stream.
-        analyser.getByteFrequencyData(streamData);
-        // calculate an overall volume value
-        var total = 0;
-        let minBins = 40;
-        let maxBins = 120;
-        for (let i = minBins; i < maxBins; i++) { // get the volume from the first 80 bins, else it gets too loud with treble
-            total += streamData[i];
-        }
-        volume = total;
-        ctx.fillStyle = 'rgb(0, 0, 0)';
-        ctx.fillRect(0, 0, canvasWidth, canvasHeight);
-
-        var largeurBarre = (canvasWidth / bufferLength) * 2.5;
-        var hauteurBarre;
-        var x = 0;
-
-        for(var i = 0; i < bufferLength; i++) {
-            hauteurBarre = streamData[i];
-
-            ctx.fillStyle = 'rgb(' + (hauteurBarre+100) + ',50,50)';
-            ctx.fillRect(x,canvasHeight-hauteurBarre/2,largeurBarre,hauteurBarre/2);
-
-            x += largeurBarre + 1;
-        }
+    var file = event.target.files[0];
+    var reader = new FileReader();
+    var context = new(window.AudioContext || window.webkitAudioContext)();
+    reader.onload = function() {
+        context.decodeAudioData(reader.result, function(buffer) {
+            prepare(buffer);
+        });
     };
-    setInterval(sampleAudioStream, 20);
-    audio.onended = function () {
-        window.clearInterval();
-    };
-
-
-    //audio.playbackRate = 16;
-    audio.playbackRate = 1;
-    audio.play();
+    reader.readAsArrayBuffer(file);
 };
+
+function prepare(buffer) {
+    var offlineContext = new OfflineAudioContext(1, buffer.length, buffer.sampleRate);
+    console.log(buffer.sampleRate);
+    console.log(buffer.length);
+    console.log(Math.floor(buffer.length/buffer.sampleRate));
+    console.log(buffer.sampleRate/buffer.sampleRate);
+    var source = offlineContext.createBufferSource();
+    source.buffer = buffer;
+    var filter = offlineContext.createBiquadFilter();
+    filter.type = "lowpass";
+    source.connect(filter);
+    filter.connect(offlineContext.destination);
+    source.start(0);
+    offlineContext.startRendering();
+    offlineContext.oncomplete = function(e) {
+        let [data, threshold] = process(e);
+        let circle = document.getElementById("circleSVG");
+        //threshold = 0.006;
+        let context =new AudioContext();
+        let src = context.createBufferSource();
+        src.buffer = e.renderedBuffer;
+        src.connect(context.destination);
+        let sampleLoop = 8;
+        let intervalStep = buffer.sampleRate/sampleLoop;
+        src.start(0);
+        //data = buffer.getChannelData(0);
+        console.log(data);
+        console.log(threshold);
+        let c = 0;
+        let mod = 0;
+        let countI = 0;
+        let intervalID = setInterval(() => {
+            countI++;
+            if (c < data.length)
+                c += intervalStep;
+            else
+            {
+                clearInterval(intervalID);
+                console.log("Finished");
+            }
+
+            let currentIdx = context.currentTime * data.length / (buffer.length/buffer.sampleRate);
+
+            let sum = 0;
+            for (let t = Math.round(currentIdx-intervalStep); t < Math.round(currentIdx+intervalStep);t++)
+            {
+                if (t > 0)
+                    sum += data[t];
+            }
+            let avgAmp = sum/(intervalStep);
+            console.log(avgAmp);
+
+            if (mod)
+            {
+                if (avgAmp > threshold)
+                {
+                    circle.setAttribute("r", "80");
+                }
+                else{
+                    circle.setAttribute("r", "40");
+                }
+            }
+            else {
+                circle.setAttribute("r", "40");
+            }
+
+            mod = countI % 2;
+        }, 1000/sampleLoop);
+    };
+}
+
 
 const SettingsMenu = ({TIME_INTERVAL, SPAWN_INTERVAL, lives, dispatch}) => (
     <div
@@ -117,6 +121,9 @@ const SettingsMenu = ({TIME_INTERVAL, SPAWN_INTERVAL, lives, dispatch}) => (
 
     >
         <input type={'file'} accept="audio/*" onInput={handleMusicChange.bind(this, {dispatch: dispatch})}/>
+        <svg height="400" width="400">
+            <circle id="circleSVG" cx="100" cy="100" r="40" stroke="black" strokeWidth="3" fill="red" />
+        </svg>
         <canvas id="canvas" width="500" height="256"/>
         <label style={{marginBottom: '100px'}}>GAME SETTINGS</label>
         <div style={{marginBottom: '10px'}}>
