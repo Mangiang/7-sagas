@@ -38,10 +38,15 @@ function* destroyTarger(targetId){
     yield put({type: "TARGET_DESTROYED", targetId: targetId});
 }
 
+function* targetClearAll() {
+    yield put({type: 'RESET_VALUES'});
+}
+
 function* targetSaga() {
     yield takeEvery("TARGET_DESTROYED_REQUESTED", manualDestroyTarget);
     yield takeEvery("TARGET_DECREMENT_BEGIN", decrementTargetValues);
     yield takeEvery("TARGET_CHECK", targetChecker);
+    yield takeEvery("TARGET_CLEAR_ALL", targetClearAll);
 }
 
 export default targetSaga;

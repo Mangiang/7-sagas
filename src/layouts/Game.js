@@ -2,9 +2,10 @@ import React from 'react';
 import {connect} from 'react-redux';
 import Target from '../components/Target';
 import Info from '../components/Info';
-import ButtonStop from '../components/ButtonStop';
+import Button from '../components/Button';
 import MainMenu from './MainMenu';
 import SettingsMenu from './SettingsMenu';
+import MusicMenu from './MusicMenu';
 
 // FIXME: maybe, do something about this ?
 const mapStateToProps = state => ({
@@ -12,10 +13,12 @@ const mapStateToProps = state => ({
     score: state.game.score,
     isStarted: state.game.isStarted,
     inSettingsMenu: state.game.inSettingsMenu,
-    targetsList: state.targets.targetsList
+    inMusicMenu: state.game.inMusicMenu,
+    targetsList: state.targets.targetsList,
+    music : state.game.music
 });
 
-const GameLayout = ({isStarted, inSettingsMenu, lives, score, targetsList, dispatch}) => (
+const GameLayout = ({isStarted, inSettingsMenu, inMusicMenu, lives, score, targetsList, music, dispatch}) => (
     <div
         style={{
             position: 'fixed',
@@ -42,12 +45,17 @@ const GameLayout = ({isStarted, inSettingsMenu, lives, score, targetsList, dispa
                         type: 'TARGET_DESTROYED_REQUESTED',
                         targetId: target.id
                     })}/>))}
-                <ButtonStop onClick={() => dispatch({type: 'GAME_STOP_REQUESTED'})}/>
+                <Button position={"relative"} text={"STOP"} top={"90%"} onClick={() => {music == null ? dispatch({type: 'GAME_STOP_REQUESTED'}) : dispatch({type : 'GAME_STOP_MUSIC_REQUESTED'})}}/>
             </React.Fragment>
         ) : (
             <React.Fragment>
                 {inSettingsMenu ?
-                    (<SettingsMenu/>) : (<MainMenu/>)
+                    (
+                        <SettingsMenu/>) : (
+                        <React.Fragment>
+                            {inMusicMenu ? (<MusicMenu/>) : (<MainMenu/>)}
+                        </React.Fragment>
+                    )
                 }
             </React.Fragment>)}
     </div>

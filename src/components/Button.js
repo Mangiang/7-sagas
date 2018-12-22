@@ -1,14 +1,34 @@
 import React from 'react';
 
+const handleClick = (onClick, disabled) => {
+    if (disabled)
+        return;
+
+    onClick();
+};
+
+const computeColor = (backgroundColor, disabled) => {
+    if (!disabled)
+        return backgroundColor;
+
+    const color = backgroundColor.substring(1);
+    const colorValue = parseInt(color, 16);
+    const newColorValue = (colorValue & 0xfefefe) >> 1;
+    return "#"+newColorValue.toString(16);
+};
+
 const Button = ({
-                    onClick = () => { },
+                    onClick = () => {
+                    },
                     backgroundColor = '#e0000f',
                     top = 0,
-                    text = ''
+                    text = '',
+                    position = 'absolute',
+                    disabled = false
                 }) => (
     <div
         style={{
-            position: 'absolute',
+            position: position,
             top: top,
             left: 0,
             right: 0,
@@ -21,10 +41,10 @@ const Button = ({
             textAlign: 'center',
             lineHeight: '100px',
             cursor: 'pointer',
-            backgroundColor: backgroundColor,
+            backgroundColor: computeColor(backgroundColor, disabled),
             color: '#21222C'
         }}
-        onClick={onClick}
+        onClick={() => handleClick(onClick, disabled)}
     >
         {text}
     </div>

@@ -2,12 +2,12 @@ const defaultState = {
     targetsList: [],
     targetId: 0,
     targetMaxValue: 5,
-    baseBackgroundColor : '#00FF00'
+    baseBackgroundColor: '#00FF00'
 };
 
 const getHexColorFromValue = (value) => {
-  const rValue = (Math.round(255 * (1-(value/defaultState.targetMaxValue)))).toString(16).toUpperCase();
-    const gValue = (Math.round(255 * (value/defaultState.targetMaxValue))).toString(16).toUpperCase();
+    const rValue = (Math.round(255 * (1 - (value / defaultState.targetMaxValue)))).toString(16).toUpperCase();
+    const gValue = (Math.round(255 * (value / defaultState.targetMaxValue))).toString(16).toUpperCase();
     const bValue = '00';
 
     return `#${rValue}${gValue}${bValue}`
@@ -30,14 +30,19 @@ const targets = (state = defaultState, action) => {
             targetsList.push({id: targetId++, x: x, y: y, value: state.targetMaxValue, backgroundColor: state.baseBackgroundColor});
             return {
                 ...state,
-                targetId : targetId,
+                targetId: targetId,
                 targetsList: targetsList
             };
         case 'TARGET_DECREMENT':
-            targetsList = state.targetsList.map((target) => ({...target, value: target.value - 1, backgroundColor : getHexColorFromValue(target.value - 1)}));
+            targetsList = state.targetsList.map((target) => ({...target, value: target.value - 1, backgroundColor: getHexColorFromValue(target.value - 1)}));
             return {
                 ...state,
                 targetsList: targetsList
+            };
+        case 'RESET_VALUES':
+            return {
+                ...defaultState,
+                targetsList:[]
             };
         default:
             return state;

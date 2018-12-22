@@ -21,4 +21,21 @@ const arrayMax = (arr) => {
     return max;
 };
 
-export {process};
+// Analyse the music and calls oncomplete when finished
+// oncomplete must take two arguments : the datas array and the Number threshold
+function analyse(buffer, oncomplete) {
+    const offlineContext = new OfflineAudioContext(1, buffer.length, buffer.sampleRate);
+    const source = offlineContext.createBufferSource();
+    source.buffer = buffer;
+    const filter = offlineContext.createBiquadFilter();
+    filter.type = "lowpass";
+    source.connect(filter);
+    filter.connect(offlineContext.destination);
+    source.start(0);
+    offlineContext.startRendering();
+    offlineContext.oncomplete = function(e) {
+        const [data, threshold] = process(e);
+        oncomplete(data, threshold);
+    };
+}
+export {process, analyse};

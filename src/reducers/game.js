@@ -3,20 +3,36 @@ const defaultState = {
     score: 0,
     isStarted: false,
     inSettingsMenu: false,
+    inMusicMenu: false,
     TIME_INTERVAL: 1000,
-    SPAWN_INTERVAL: 1000
+    SPAWN_INTERVAL: 1000,
+    music: null,
+    musicContext: null,
+    musicSource: null,
+    stopRequested: false
 };
 
 const game = (state = defaultState, action) => {
     switch (action.type) {
+        case 'GAME_CHOOSE_MUSIC':
+            return {
+                ...state,
+                isStarted: false,
+                inSettingsMenu: false,
+                inMusicMenu: true
+            };
         case 'GAME_SETTINGS':
             return {
                 ...state,
+                isStarted: false,
+                inMusicMenu: false,
                 inSettingsMenu: true
             };
         case 'GAME_MAIN_MENU':
             return {
                 ...state,
+                isStarted: false,
+                inMusicMenu: false,
                 inSettingsMenu: false
             };
         case 'GAME_START':
@@ -24,10 +40,36 @@ const game = (state = defaultState, action) => {
                 ...state,
                 isStarted: true
             };
+        case 'GAME_START_MUSIC':
+            return {
+                ...state,
+                inMusicMenu: false,
+                isStarted: true
+            };
+        case 'GAME_STOP_APPLY':
+            return{
+                ...defaultState,
+                TIME_INTERVAL: state.TIME_INTERVAL,
+                SPAWN_INTERVAL: state.SPAWN_INTERVAL
+            };
         case 'GAME_STOP':
             return {
+                ...state,
+                stopRequested: true
+            };
+        case 'GAME_STOP_MUSIC':
+            const musicSrc = state.musicSource;
+            const musicCtx = state.musicContext;
+            musicSrc.stop(0);
+            musicCtx.close();
+            return {
                 ...defaultState,
-                isStarted: false
+                TIME_INTERVAL: state.TIME_INTERVAL,
+                SPAWN_INTERVAL: state.SPAWN_INTERVAL,
+                music: null,
+                isStarted: false,
+                musicContext: null,
+                musicSource: null
             };
         case 'GAME_CHANGE_TIME_INTERVAL':
             return {
@@ -44,13 +86,24 @@ const game = (state = defaultState, action) => {
                 ...state,
                 lives: action.newLivesCount
             };
-        case 'INCREMENT_SCORE':
+        case 'GAME_CHANGE_MUSIC':
+            return {
+                ...state,
+                music: action.music
+            };
+        case 'GAME_CHANGE_MUSIC_CONTEXT':
+            return{
+                ...state,
+                musicContext: action.ctx,
+                musicSource: action.src
+            };
+        case 'GAME_INCREMENT_SCORE':
             let newScore = state.score + 1;
             return {
                 ...state,
                 score: newScore
             };
-        case 'DECREASE_LIFE':
+        case 'GAME_DECREASE_LIFE':
             return {
                 ...state,
                 lives: state.lives - 1
