@@ -41,18 +41,18 @@ const SettingsMenu = ({music, isLoading, dispatch}) => (
         }}
 
     >
-        <label style={{marginBottom: '20px'}}>GAME MUSIC</label>
-        <div>
+        <label style={{margin: 'auto'}}>GAME MUSIC</label>
+        <div style={{margin: 'auto'}}>
             <label htmlFor={'musicInput'}>Choose a music to analyse : </label>
             <input id="musicInput" style={{marginBottom: '50px'}} type={'file'} accept="audio/mpeg"
                    onInput={handleMusicChange.bind(this, {dispatch: dispatch})}/>
         </div>
-        <audio id={'audio'} controls="controls">
+        <audio id={'audio'} controls="controls" style={{margin:'auto'}}>
             Your browser does not support the &lt;audio&gt; tag.
         </audio>
         {
             isLoading &&
-            <div>
+            <div style={{margin:'auto'}}>
                 <h3>Loading ... please wait ...</h3>
                 <img alt="loading..." width={"500"} height={"auto"} src="loading.gif"/>
             </div>}

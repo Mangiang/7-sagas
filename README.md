@@ -30,6 +30,7 @@ rule: all of this must be handled from the sagas
 
 - `Spawn time` is a settable variable
 - `Max target` value is a settable variable
+- Add `return to menu` when no life left
 - Add `god mode`
 - Add `Settings` menu :
     * Lives count
