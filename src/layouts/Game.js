@@ -40,6 +40,7 @@ const GameLayout = ({isStarted, inSettingsMenu, inMusicMenu, lives, score, targe
                     x={target.x}
                     y={target.y}
                     value={target.value}
+                    circleShape={music != null}
                     backgroundColor={target.backgroundColor}
                     onClick={() => dispatch({
                         type: 'TARGET_DESTROYED_REQUESTED',

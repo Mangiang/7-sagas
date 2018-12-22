@@ -18,7 +18,7 @@ const MainMenu = ({dispatch}) => (
         }}
     >
         <Button text={"Start"} backgroundColor={"#4BE072"} onClick={() => dispatch({type: 'GAME_START_REQUESTED'})}/>
-        <Button text={"Start with music"} top={"220px"} backgroundColor={"#3a90e0"} onClick={() => dispatch({type: 'GAME_CHOOSE_MUSIC_REQUESTED'})}/>
+        <Button text={"Music mode"} top={"220px"} backgroundColor={"#3a90e0"} onClick={() => dispatch({type: 'GAME_CHOOSE_MUSIC_REQUESTED'})}/>
         <Button text={"Settings"} top={"440px"} backgroundColor={"#e0a342"} onClick={() => dispatch({type: 'GAME_SETTINGS_REQUESTED'})}/>
     </div>
 );
