@@ -39,7 +39,9 @@ function* targetChecker() {
     for (let i = 0; i < toDestroy.length; i++)
     {
         yield destroyTarger(toDestroy[i]);
-        yield put({type:'DECREASE_LIFE_REQUESTED'});
+        const godModeEnabled = yield  select(state => state.game.godModeEnabled);
+        if (!godModeEnabled)
+            yield put({type:'DECREASE_LIFE_REQUESTED'});
     }
 }
 

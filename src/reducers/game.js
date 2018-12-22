@@ -9,7 +9,8 @@ const defaultState = {
     music: null,
     musicContext: null,
     musicSource: null,
-    stopRequested: false
+    stopRequested: false,
+    godModeEnabled : false
 };
 
 const game = (state = defaultState, action) => {
@@ -85,6 +86,11 @@ const game = (state = defaultState, action) => {
             return {
                 ...state,
                 lives: action.newLivesCount
+            };
+        case 'GAME_CHANGE_GOD_MODE':
+            return {
+                ...state,
+                godModeEnabled: action.value
             };
         case 'GAME_CHANGE_MUSIC':
             return {

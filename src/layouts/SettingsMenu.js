@@ -18,6 +18,10 @@ const handleLivesCountChange = (dispatchObject, event) => {
     dispatchObject.dispatch({type: 'GAME_CHANGE_LIVES_COUNT_REQUESTED', newLivesCount: parseInt(event.target.value)});
 };
 
+const handleGodModeChange = (dispatchObject, event) => {
+    dispatchObject.dispatch({type: 'GAME_CHANGE_GOD_MODE_REQUESTED', value: event.target.value});
+};
+
 const SettingsMenu = ({TIME_INTERVAL, SPAWN_INTERVAL, lives, dispatch}) => (
     <div
         style={{
@@ -50,7 +54,12 @@ const SettingsMenu = ({TIME_INTERVAL, SPAWN_INTERVAL, lives, dispatch}) => (
                    defaultValue={SPAWN_INTERVAL / 1000}/>
             <label> seconds.</label>
         </div>
-        <Button style={{marginUp: '30px'}} text={"Main Menu"} onClick={() => dispatch({type: 'GAME_MAIN_MENU_REQUESTED'})}/>
+        <div style={{marginBottom: '10px'}}>
+            <label htmlFor="godModeInput">God mode : </label>
+            <input style={{width: '50px'}} id="godModeInput" type="checkbox" onInput={handleGodModeChange.bind(this, {dispatch: dispatch})}
+                   defaultValue={false}/>
+        </div>
+        <Button style={{marginUp: '30px'}} position={"relative"} text={"Main Menu"} onClick={() => dispatch({type: 'GAME_MAIN_MENU_REQUESTED'})}/>
     </div>
 );
 
